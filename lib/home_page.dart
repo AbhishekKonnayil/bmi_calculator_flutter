@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/flutter_percent_indicator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -87,13 +88,71 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget buildOutputUi() {
+    double indicatorValue = bmiValue!;
+    if (indicatorValue >= 30.0) {
+      indicatorValue = 29.99;
+    } else if (indicatorValue <= 18.5) {
+      indicatorValue = 18.6;
+    }
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("$bmiValue"),
-        MaterialButton(
-          color: Colors.greenAccent,
-          onPressed: checkAnother,
-          child: Text("Check Another"),
+        Container(
+          width: double.infinity,
+          height: 50,
+          alignment: Alignment.center,
+          decoration: boxDecoration,
+          child: Text(
+            "BMI: ${bmiValue!.toStringAsFixed(1)}",
+            style: TextStyle(color: Colors.white70, fontSize: 28),
+          ),
+        ),
+        const SizedBox(height: 25),
+        Container(
+          height: 50,
+          decoration: boxDecoration,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.lightBlue.withValues(alpha: 0.75),
+                  Colors.green.withValues(alpha: 0.75),
+                ],
+              ),
+            ),
+            child: LinearPercentIndicator(
+              barRadius: Radius.circular(10),
+              lineHeight: 12,
+              linearGradient: LinearGradient(
+                colors: [Colors.purple, Colors.purple.shade300],
+              ),
+              animation: true,
+              percent: ((indicatorValue - 18.5) * 8.70 / 100),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 25),
+
+        Container(
+          decoration: boxDecoration,
+          child: MaterialButton(
+            onPressed: checkAnother,
+            height: 60,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            minWidth: double.infinity,
+            child: Text(
+              'Check Another',
+              style: TextStyle(
+                color: Colors.green.shade200,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
       ],
     );
@@ -101,12 +160,32 @@ class _HomePageState extends State<HomePage> {
 
   void calculateBMI() {
     //BMI Formula: weight (kg) / [height (m)]^2
-
-    double h = double.tryParse(heightController.text)! / 100;
-    double w = double.tryParse(weightController.text)!;
-    setState(() {
-      bmiValue = w / (h * h);
-    });
+    try {
+      double h = double.tryParse(heightController.text)! / 100;
+      double w = double.tryParse(weightController.text)!;
+      setState(() {
+        bmiValue = w / (h * h);
+      });
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (_) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: Colors.grey.shade900,
+            child: Container(
+              padding: EdgeInsets.all(25),
+              child: const Text(
+                "Invalid values of height or weight",
+                style: TextStyle(color: Colors.redAccent, fontSize: 18),
+              ),
+            ),
+          );
+        },
+      );
+    }
 
     print("BMI : $bmiValue");
   }
