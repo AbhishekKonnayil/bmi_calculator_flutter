@@ -23,7 +23,31 @@ class _HomePageState extends State<HomePage> {
   );
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: bmiValue == null ? buildInputUi() : buildOutputUi());
+    return Scaffold(
+      backgroundColor: const Color.fromRGBO(33, 33, 33, 1),
+      body: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "BMI CALCULATOR",
+                style: TextStyle(color: Colors.white, fontSize: 42),
+              ),
+
+              Container(
+                width: 360,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8.0),
+                child: bmiValue == null ? buildInputUi() : buildOutputUi(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildInputUi() {
